@@ -1,47 +1,91 @@
 import {
   Account,
-  initThreadPool,
-  PrivateKey,
+  AleoNetworkClient,
   ProgramManager,
+  PrivateKey,
+  initThreadPool,
+  NetworkRecordProvider
 } from "@provablehq/sdk";
 
+// Initialize the thread pool for wasm operations
 await initThreadPool();
 
-const hello_hello_program =`
-program hello_hello.aleo;
+// Define the deployed program ID
+const PROGRAM_ID = "private_donation.aleo"; // Make sure this matches your deployed program name
 
-function hello:
-    input r0 as u32.public;
-    input r1 as u32.private;
-    add r0 r1 into r2;
-    output r2 as u32.private;`
+// Aleo Testnet3 API endpoint
+const ALEO_TESTNET_API_URL = "https://api.explorer.provable.com/v1/testnet"; 
 
-async function localProgramExecution(program: string, aleoFunction: string, inputs: string[]) {
-  const programManager = new ProgramManager();
 
-  // Create a temporary account for the execution of the program
-  const account = new Account();
-  programManager.setAccount(account);
-
-  const executionResponse = await programManager.run(
-      program,
-      aleoFunction,
-      inputs,
-      false,
-  );
-  return executionResponse.getOutputs();
+// Helper function to get transaction status
+async function getTransactionStatus(transactionId: string): Promise<string> {
+    let status = "";
+    while (status !== "Finalized" && status !== "Rejected" && status !== "Failed") {
+        const response = await fetch(`${ALEO_TESTNET_API_URL}/transaction/${transactionId}/status`);
+        const data = await response.json();
+        status = data.status;
+        if (status !== "Finalized" && status !== "Rejected" && status !== "Failed") {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before polling again
+        }
+    }
+    return status;
 }
 
-function getPrivateKey() {
-  return new PrivateKey().to_string();
-}
 
 onmessage = async function (e) {
-  if (e.data === "execute") {
-    const result = await localProgramExecution(hello_hello_program, "hello", ["5u32", "5u32"]);
-    postMessage({type: "execute", result: result});
-  } else if (e.data === "key") {
-    const result = getPrivateKey();
-    postMessage({type: "key", result: result});
+  const { type, payload } = e.data;
+
+  try {
+    if (type === "generate_account") {
+      const privateKey = new PrivateKey();
+      postMessage({ type: "account_generated", result: { privateKey: privateKey.to_string(), address: privateKey.to_address().to_string() } });
+    } else if (type === "execute_transaction") {
+      const { privateKeyString, functionName, inputs, fee } = payload;
+      
+      if (!privateKeyString || !PROGRAM_ID || !functionName || !inputs) {
+        postMessage({ type: "error", result: "Missing required parameters for execution." });
+        return;
+      }
+
+      const userPrivateKey = PrivateKey.from_string(privateKeyString);
+      const userAccount = new Account({ privateKey: userPrivateKey.to_string() });
+
+      const networkClient = new AleoNetworkClient(ALEO_TESTNET_API_URL);
+      const recordProvider = new NetworkRecordProvider(userAccount, networkClient);
+
+      const programManager = new ProgramManager(ALEO_TESTNET_API_URL, undefined, recordProvider);
+      programManager.setAccount(userAccount);
+      
+      console.log(`Worker: Executing ${PROGRAM_ID}/${functionName} with inputs:`, inputs);
+
+      // The SDK's execute method handles building, broadcasting, and waiting for the transaction.
+      // Attempting single object argument structure based on persistent linter error
+      const transactionId = await programManager.execute({
+        program: PROGRAM_ID, // Corrected from programID to program based on linter feedback
+        functionName: functionName,
+        inputs: inputs,
+        transactionFee: fee || 0.1, 
+        privateKey: userPrivateKey, 
+        broadcastOnly: false 
+      });
+      
+      postMessage({ type: "transaction_broadcasted", result: { transactionId, functionName } });
+
+      // Optional: Poll for transaction status (can also be done on the frontend)
+      // const status = await getTransactionStatus(transactionId);
+      // if (status === "Finalized") {
+      //    const transaction = await networkClient.getTransaction(transactionId);
+      //    postMessage({ type: "transaction_finalized", result: { transactionId, transaction, functionName } });
+      // } else {
+      //    postMessage({ type: "transaction_failed", result: { transactionId, status, functionName } });
+      // }
+
+    }
+  } catch (error) {
+    console.error("Worker error:", error);
+    postMessage({ type: "error", result: (error as Error).message });
   }
 };
+
+// Expose a simple function to confirm worker is loaded (optional)
+postMessage({ type: "worker_loaded" });
