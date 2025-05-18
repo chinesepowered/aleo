@@ -44,7 +44,7 @@ export default function Home() {
   const [taxYear, setTaxYear] = useState<string>(new Date().getFullYear().toString());
 
 
-  const workerRef = useRef<Worker>();
+  const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
     workerRef.current = new Worker(new URL("worker.ts", import.meta.url));
@@ -108,7 +108,7 @@ export default function Home() {
         privateKeyString: account.privateKey,
         functionName,
         inputs,
-        fee: fee || 0.1, // Default fee, adjust as necessary
+        fee: fee || 1, // Increased default fee to 1 credit
       },
     });
   };

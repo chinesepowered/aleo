@@ -13,8 +13,8 @@ await initThreadPool();
 // Define the deployed program ID
 const PROGRAM_ID = "private_donation.aleo"; // Make sure this matches your deployed program name
 
-// Aleo Testnet3 API endpoint
-const ALEO_TESTNET_API_URL = "https://api.explorer.provable.com/v1/testnet"; 
+// Aleo Testnet3 API endpoint - Corrected: Removed /testnet from the end
+const ALEO_TESTNET_API_URL = "https://api.explorer.provable.com/v1"; 
 
 
 // Helper function to get transaction status
@@ -61,12 +61,12 @@ onmessage = async function (e) {
       // The SDK's execute method handles building, broadcasting, and waiting for the transaction.
       // Attempting single object argument structure based on persistent linter error
       const transactionId = await programManager.execute({
-        program: PROGRAM_ID, // Corrected from programID to program based on linter feedback
+        programName: PROGRAM_ID,
         functionName: functionName,
         inputs: inputs,
-        transactionFee: fee || 0.1, 
-        privateKey: userPrivateKey, 
-        broadcastOnly: false 
+        priorityFee: fee || 0.1,
+        privateFee: fee || 0.1,
+        privateKey: userPrivateKey
       });
       
       postMessage({ type: "transaction_broadcasted", result: { transactionId, functionName } });

@@ -41,22 +41,54 @@
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #0070f3;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: border-color 0.25s;
+  font-size: 1rem;
+  margin-top: 10px;
+  transition: background-color 0.2s ease-in-out;
 }
+
 button:hover {
-  border-color: #646cff;
+  background-color: #005bb5;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  width: calc(100% - 18px);
+}
+
+.feedback {
+  color: #0070f3;
+  background-color: #f0f0f0;
+  padding: 0.75rem 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-family: monospace;
+  word-break: break-all;
+  border: 1px solid #e0e0e0;
+}
+
+.feedback.error {
+  color: red;
+  background-color: #ffe0e0;
+  border-color: #ffc0c0;
 }
 
 @media (prefers-color-scheme: dark) {
