@@ -58,7 +58,7 @@ The contract ensures:
 
 <div align="center">
   <img src="/public/scr3.jpg" alt="Testnet Explorer" width="45%">
-  <img src="https://via.placeholder.com/400x300" alt="Tax Verification" width="45%">
+  <img src="/public/scr4.jpg" alt="Testnet Explorer" width="45%">
 </div>
 
 ## 🔄 Future Development
