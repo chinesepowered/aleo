@@ -2,13 +2,27 @@
 
 > Privacy-preserving charitable donations on Aleo blockchain
 
-![Private Donation Platform Banner](https://via.placeholder.com/1200x300)
 
 ## 🌟 Overview
 
 Private Donation Platform is a decentralized application built on the Aleo blockchain that enables completely private charitable donations while providing cryptographically verifiable proof for tax deduction purposes. By leveraging zero-knowledge proofs, donors can support causes they care about without revealing their identity or donation amounts to anyone except tax authorities when necessary.
 
-Deployed program: https://testnet.aleoscan.io/program?id=private_donation.aleo
+[Leo Smart Contract](https://raw.githubusercontent.com/chinesepowered/aleo/refs/heads/main/contracts/src/main.leo)
+[Smart Contract Testnet Deployment](https://testnet.aleoscan.io/program?id=private_donation.aleo)
+[Presentation Slides](https://www.canva.com/design/DAGn2nQ80zA/79MByu6oX4ACxLmd8_F_9A/edit)
+[Demo Video](https://github.com/chinesepowered/aleo/raw/refs/heads/main/public/demo.mp4)
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="/public/scr1.jpg" alt="Dashboard" width="45%">
+  <img src="/public/scr2.jpg" alt="Tax Receipt" width="45%">
+</div>
+
+<div align="center">
+  <img src="/public/scr3.jpg" alt="Testnet Explorer" width="45%">
+  <img src="/public/scr4.jpg" alt="Testnet Explorer" width="45%">
+</div>
 
 ## ✨ Key Features
 
@@ -24,12 +38,11 @@ Deployed program: https://testnet.aleoscan.io/program?id=private_donation.aleo
 - **Blockchain**: Aleo (privacy-focused L1 blockchain)
 - **Smart Contract**: Written in Leo programming language
 - **Frontend**: React.js with Tailwind CSS
-- **Wallet Integration**: Compatible with major Aleo wallets
 - **Zero-Knowledge Proofs**: For private-yet-verifiable donations
 
 ## 📋 How It Works
 
-1. **Connect Wallet**: User connects their Aleo wallet to the application
+1. **Wallet**: Ensure wallet has enough ALEO to execute transactions
 2. **Select Charity**: Browse and select from verified charitable organizations
 3. **Make Donation**: Send funds privately through an Aleo transaction
 4. **Receive Receipt**: Get a cryptographic receipt stored in your wallet
@@ -49,21 +62,10 @@ The contract ensures:
 - Tax authorities can verify legitimacy without seeing specific amounts
 - Charities receive funds without knowing donor identities
 
-## 📸 Screenshots
-
-<div align="center">
-  <img src="/public/scr1.jpg" alt="Dashboard" width="45%">
-  <img src="/public/scr2.jpg" alt="Tax Receipt" width="45%">
-</div>
-
-<div align="center">
-  <img src="/public/scr3.jpg" alt="Testnet Explorer" width="45%">
-  <img src="/public/scr4.jpg" alt="Testnet Explorer" width="45%">
-</div>
 
 ## 🔄 Future Development
 
-- **Multi-Charity Support**: Expand beyond the current dummy charity implementation
+- **Multi-Charity Support**: Increase number of charities supported
 - **Recurring Donations**: Schedule regular private contributions
 - **Charity DAO**: Decentralized governance for charity verification
 - **Mobile App**: Native mobile experience for iOS and Android
