@@ -8,6 +8,8 @@
 
 Private Donation Platform is a decentralized application built on the Aleo blockchain that enables completely private charitable donations while providing cryptographically verifiable proof for tax deduction purposes. By leveraging zero-knowledge proofs, donors can support causes they care about without revealing their identity or donation amounts to anyone except tax authorities when necessary.
 
+Deployed program: https://testnet.aleoscan.io/program?id=private_donation.aleo
+
 ## ✨ Key Features
 
 - **🕵️‍♂️ Anonymous Donations**: Make contributions to charities without revealing your identity
