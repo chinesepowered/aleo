@@ -52,12 +52,12 @@ The contract ensures:
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="https://via.placeholder.com/400x300" alt="Dashboard" width="45%">
-  <img src="https://via.placeholder.com/400x300" alt="Donation Process" width="45%">
+  <img src="/public/scr1.jpg" alt="Dashboard" width="45%">
+  <img src="/public/scr2.jpg" alt="Tax Receipt" width="45%">
 </div>
 
 <div align="center">
-  <img src="https://via.placeholder.com/400x300" alt="Receipt Generation" width="45%">
+  <img src="/public/scr3.jpg" alt="Testnet Explorer" width="45%">
   <img src="https://via.placeholder.com/400x300" alt="Tax Verification" width="45%">
 </div>
 
