@@ -1,6 +1,6 @@
 # 🔐 Private Donation Platform 🔐
 
-> Privacy-preserving charitable donations on Aleo blockchain
+> Privacy-preserving charitable donations with zkproof tax receipts on Aleo blockchain
 
 
 ## 🌟 Overview
