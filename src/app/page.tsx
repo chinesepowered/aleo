@@ -24,8 +24,11 @@ interface AleoAccount {
   address: string;
 }
 
+const LOCAL_STORAGE_ACCOUNT_KEY = "aleoDonationAppAccount";
+
 export default function Home() {
   const [account, setAccount] = useState<AleoAccount | null>(null);
+  const [isAccountLoaded, setIsAccountLoaded] = useState(false);
   const [executingFunction, setExecutingFunction] = useState<string | null>(null); 
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [transactionId, setTransactionId] = useState<string | null>(null);
@@ -47,6 +50,22 @@ export default function Home() {
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
+    // Load account from localStorage on initial mount
+    const savedAccountJson = localStorage.getItem(LOCAL_STORAGE_ACCOUNT_KEY);
+    if (savedAccountJson) {
+      try {
+        const savedAccount = JSON.parse(savedAccountJson);
+        if (savedAccount && savedAccount.privateKey && savedAccount.address) {
+          setAccount(savedAccount);
+          setFeedbackMessage(`Loaded saved account: ${savedAccount.address}`);
+        }
+      } catch (e) {
+        console.error("Failed to parse saved account:", e);
+        localStorage.removeItem(LOCAL_STORAGE_ACCOUNT_KEY); // Clear corrupted data
+      }
+    }
+    setIsAccountLoaded(true); // Indicate that we've attempted to load the account
+
     workerRef.current = new Worker(new URL("worker.ts", import.meta.url));
     
     workerRef.current.onmessage = (event: MessageEvent) => {
@@ -56,11 +75,12 @@ export default function Home() {
       setExecutingFunction(null); // Stop loading indicator for any completed/failed function
 
       if (type === "worker_loaded") {
-        setFeedbackMessage("Aleo worker loaded successfully.");
+        setFeedbackMessage((prev) => prev ? `${prev} Aleo worker loaded.` : "Aleo worker loaded successfully.");
       }
       else if (type === "account_generated") {
         setAccount(result);
-        setFeedbackMessage(`Account generated! Address: ${result.address}. Private key: ${result.privateKey} (SAVE THIS securely!)`);
+        localStorage.setItem(LOCAL_STORAGE_ACCOUNT_KEY, JSON.stringify(result));
+        setFeedbackMessage(`New account generated & saved! Address: ${result.address}. Private key: ${result.privateKey} (SAVE THIS securely if not already done!)`);
       } 
       else if (type === "transaction_broadcasted") {
         setTransactionId(result.transactionId);
@@ -88,10 +108,21 @@ export default function Home() {
     };
   }, []);
 
-  const generateAccount = () => {
-    setFeedbackMessage("Generating Aleo account...");
+  const generateNewAccount = (overwriteSaved = false) => {
+    if (!overwriteSaved && localStorage.getItem(LOCAL_STORAGE_ACCOUNT_KEY)) {
+      if (!confirm("An account is already saved. Overwrite it with a new one?")) {
+        return;
+      }
+    }
+    setFeedbackMessage("Generating new Aleo account...");
     setExecutingFunction("generate_account");
     workerRef.current?.postMessage({ type: "generate_account" });
+  };
+
+  const clearSavedAccount = () => {
+    localStorage.removeItem(LOCAL_STORAGE_ACCOUNT_KEY);
+    setAccount(null);
+    setFeedbackMessage("Saved account cleared. Generate a new one or refresh.");
   };
 
   const executeGenericTransaction = (functionName: string, inputs: any[], fee?: number) => {
@@ -172,6 +203,10 @@ export default function Home() {
     executeGenericTransaction("generate_tax_proof", inputs);
   };
 
+  if (!isAccountLoaded) {
+    return <main className={styles.main}><p>Loading account...</p></main>; // Or a proper loading spinner
+  }
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -198,11 +233,17 @@ export default function Home() {
           {account ? (
             <div>
               <p><strong>Address:</strong> {account.address}</p>
-              <p><strong>Private Key:</strong> <small>{account.privateKey}</small> <em>(Store securely!)</em></p>
+              <p><strong>Private Key:</strong> <small>{account.privateKey}</small></p>
+              <button onClick={clearSavedAccount} disabled={!!executingFunction} style={{backgroundColor: '#f44336'}}>
+                Clear Saved Account
+              </button>
+              <button onClick={() => generateNewAccount(true)} disabled={!!executingFunction} style={{marginLeft: '10px'}}>
+                Generate New (Overwrite)
+              </button>
             </div>
           ) : (
-            <button onClick={generateAccount} disabled={!!executingFunction}>
-              {executingFunction === 'generate_account' ? "Generating..." : "Generate New Aleo Account"}
+            <button onClick={() => generateNewAccount(false)} disabled={!!executingFunction}>
+              {executingFunction === 'generate_account' ? "Generating..." : "Generate and Save New Account"}
             </button>
           )}
         </div>
@@ -211,7 +252,7 @@ export default function Home() {
         {account && (
           <div className={styles.card}>
             <h2>1. Mint Tokens (Test)</h2>
-            <p>Mint new tokens to your account. You will need to copy the output Token record from the explorer for the next step.</p>
+            <p>Ensure your account (<strong>{account.address}</strong>) has Aleo testnet credits from a faucet.</p>
             <div>
               <label>Amount (u64): </label>
               <input 

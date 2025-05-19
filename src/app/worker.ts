@@ -16,75 +16,98 @@ const PROGRAM_ID = "private_donation.aleo"; // Make sure this matches your deplo
 // Point to the local Next.js API proxy route
 const ALEO_PROXY_URL = "/api/aleo"; 
 
+// Declare ProgramManager instance variable, to be initialized on first use or based on account
+let programManager: ProgramManager | null = null;
+let networkClient: AleoNetworkClient | null = null;
+
 // Helper function to get transaction status
 async function getTransactionStatus(transactionId: string): Promise<string> {
     let status = "";
     while (status !== "Finalized" && status !== "Rejected" && status !== "Failed") {
-        const response = await fetch(`${ALEO_PROXY_URL}/transaction/${transactionId}/status`);
-        const data = await response.json();
-        status = data.status;
+        const response = await fetch(`${ALEO_PROXY_URL}/testnet/transaction/${transactionId}`); // Corrected path for status
+        try {
+            const data = await response.json();
+            status = data.status || data.type; // Adapt to actual API response for status
+             if (status === 'Accepted') status = 'Finalized'; // Temporary: Treat 'Accepted' as 'Finalized' for simplicity
+        } catch (e) {
+            console.error("Error parsing transaction status:", e);
+            status = "Failed"; // Assume failure if status parsing fails
+        }
         if (status !== "Finalized" && status !== "Rejected" && status !== "Failed") {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before polling again
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Poll every 2 seconds
         }
     }
+    console.log(`Transaction ${transactionId} status: ${status}`);
     return status;
 }
 
+self.onmessage = async function (e: MessageEvent<any>) {
+    const { type, data } = e.data;
 
-onmessage = async function (e) {
-  const { type, payload } = e.data;
-
-  try {
-    if (type === "generate_account") {
-      const privateKey = new PrivateKey();
-      postMessage({ type: "account_generated", result: { privateKey: privateKey.to_string(), address: privateKey.to_address().to_string() } });
-    } else if (type === "execute_transaction") {
-      const { privateKeyString, functionName, inputs, fee } = payload;
-      
-      if (!privateKeyString || !PROGRAM_ID || !functionName || !inputs) {
-        postMessage({ type: "error", result: "Missing required parameters for execution." });
-        return;
-      }
-
-      const userPrivateKey = PrivateKey.from_string(privateKeyString);
-      const userAccount = new Account({ privateKey: userPrivateKey.to_string() });
-
-      // The AleoNetworkClient and ProgramManager will now use the proxy URL
-      const networkClient = new AleoNetworkClient(ALEO_PROXY_URL);
-      const recordProvider = new NetworkRecordProvider(userAccount, networkClient);
-
-      const programManager = new ProgramManager(ALEO_PROXY_URL, undefined, recordProvider);
-      programManager.setAccount(userAccount);
-      
-      console.log(`Worker: Executing ${PROGRAM_ID}/${functionName} with inputs:`, inputs);
-
-      // The SDK's execute method handles building, broadcasting, and waiting for the transaction.
-      // Attempting single object argument structure based on persistent linter error
-      const transactionId = await programManager.execute({
-        programName: PROGRAM_ID,
-        functionName: functionName,
-        inputs: inputs,
-        priorityFee: fee || 0.1,
-        privateFee: fee || 0.1,
-        privateKey: userPrivateKey
-      });
-      
-      postMessage({ type: "transaction_broadcasted", result: { transactionId, functionName } });
-
-      // Optional: Poll for transaction status (can also be done on the frontend)
-      // const status = await getTransactionStatus(transactionId);
-      // if (status === "Finalized") {
-      //    const transaction = await networkClient.getTransaction(transactionId);
-      //    postMessage({ type: "transaction_finalized", result: { transactionId, transaction, functionName } });
-      // } else {
-      //    postMessage({ type: "transaction_failed", result: { transactionId, status, functionName } });
-      // }
-
+    // Initialize NetworkClient if it hasn't been already
+    if (!networkClient) {
+        networkClient = new AleoNetworkClient(ALEO_PROXY_URL);
     }
-  } catch (error) {
-    console.error("Worker error:", error);
-    postMessage({ type: "error", result: (error as Error).message });
-  }
+
+    try {
+        if (type === 'generate_account') {
+            const newAccount = new Account(); // Creates a new account with a new private key
+            const privateKey = newAccount.privateKey();
+            const address = newAccount.address();
+            postMessage({ type: 'account_generated', result: { privateKey: privateKey.to_string(), address: address.to_string() } });
+        } else if (type === 'execute_transaction') {
+            const { privateKey: privateKeyString, programId, functionName, inputs, fee } = data;
+            
+            if (!programId || !functionName || !inputs || !privateKeyString) {
+                 postMessage({ type: 'error', result: 'Missing parameters for execute_transaction' });
+                 return;
+            }
+
+            const aleoAccount = new Account({ privateKey: privateKeyString });
+            const aleoPrivateKey = aleoAccount.privateKey(); // Or PrivateKey.from_string(privateKeyString);
+
+            // Initialize ProgramManager with the specific account for this transaction
+            // This ensures the record provider is set up for the correct account
+            const recordProvider = new NetworkRecordProvider(aleoAccount, networkClient);
+            programManager = new ProgramManager(ALEO_PROXY_URL, undefined, recordProvider);
+            programManager.setAccount(aleoAccount); // Explicitly set the account for the ProgramManager instance
+
+            const parsedFee = parseFloat(fee);
+            if (isNaN(parsedFee)) {
+                postMessage({ type: 'error', result: 'Invalid fee amount provided.' });
+                return;
+            }
+
+            const priorityFee = parsedFee; 
+            const privateFee = 0;          
+
+            console.log('Worker: Execution options', { programName: programId, functionName, inputs, priorityFee, privateFee });
+            
+            // Correct call to programManager.execute using the options object for SDK 0.8.8
+            const transactionId = await programManager.execute({
+                programName: programId,
+                functionName: functionName,
+                inputs: inputs,
+                privateKey: aleoPrivateKey, // Ensure this is the PrivateKey object
+                priorityFee: priorityFee,
+                privateFee: privateFee,
+                // recordProvider: recordProvider, // Potentially needed if not implicitly handled by setAccount
+                // aleoClient: networkClient, // Potentially needed
+            });
+
+            console.log('Worker: Transaction broadcasted:', transactionId);
+            postMessage({ type: 'transaction_broadcasted', transactionId });
+
+            // Optional: Start polling for transaction status
+            // getTransactionStatus(transactionId).then(status => {
+            //     postMessage({ type: 'transaction_status_updated', transactionId, status });
+            // });
+
+        }
+    } catch (error) {
+        console.error('Worker error:', error);
+        postMessage({ type: 'error', result: (error as Error).message });
+    }
 };
 
 // Expose a simple function to confirm worker is loaded (optional)
