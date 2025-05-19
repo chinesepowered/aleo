@@ -1,7 +1,6 @@
 {
-  "program": "private_donation.aleo",
-  "version": "0.1.0",
-  "description": "",
-  "license": "MIT",
-  "dependencies": null
+    "program": "private_donation.aleo",
+    "version": "0.0.0",
+    "description": "",
+    "license": "MIT"
 }

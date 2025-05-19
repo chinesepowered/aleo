@@ -81,18 +81,15 @@ self.onmessage = async function (e: MessageEvent<any>) {
             const priorityFee = parsedFee; 
             const privateFee = 0;          
 
-            console.log('Worker: Execution options', { programName: programId, functionName, inputs, priorityFee, privateFee });
+            console.log('Worker: Execution options', { programName: programId, functionName, inputs, priorityFee, privateFeeValue: privateFee });
             
-            // Correct call to programManager.execute using the options object for SDK 0.8.8
             const transactionId = await programManager.execute({
                 programName: programId,
                 functionName: functionName,
                 inputs: inputs,
-                privateKey: aleoPrivateKey, // Ensure this is the PrivateKey object
+                privateKey: aleoPrivateKey,
                 priorityFee: priorityFee,
-                privateFee: privateFee,
-                // recordProvider: recordProvider, // Potentially needed if not implicitly handled by setAccount
-                // aleoClient: networkClient, // Potentially needed
+                privateFee: false,
             });
 
             console.log('Worker: Transaction broadcasted:', transactionId);

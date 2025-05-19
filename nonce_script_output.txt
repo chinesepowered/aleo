@@ -1,0 +1,100 @@
+Attempting to find and decrypt records for transaction ID: at1e5g4v3k5f856lg2c64nwdaezh5ay2chf4rfleaenlalhg6p4xupqm0px68
+Using View Key starting with: AViewKey1jGjoyV...
+Fetching transaction details...
+Full transaction object: {
+  "type": "execute",
+  "id": "at1e5g4v3k5f856lg2c64nwdaezh5ay2chf4rfleaenlalhg6p4xupqm0px68",
+  "execution": {
+    "transitions": [
+      {
+        "id": "au1uxsyhz3439c4y52ns9lqnq0u4cj68xrta8h2g9j5cdu7llukagqsf0uh99",
+        "program": "private_donation.aleo",
+        "function": "mint_tokens",
+        "inputs": [
+          {
+            "type": "private",
+            "id": "7639679583018349106134255353525145733223260849569047968070951947095322405059field",
+            "value": "ciphertext1qgqqnh7e5kewh0wrv04qejzcfn2egvk9ld7ugydxaxkcc9qhwymmzzejg070krsmju4hatx9y7d88cu4kpn4asha4pxvgya2m8xvf5urqs2lxk5z"
+          },
+          {
+            "type": "private",
+            "id": "2022444244565600617786563324179298895635355914112552978526932613806932991864field",
+            "value": "ciphertext1qyqx245luv2g7y96gtqlmz9td7xf53psvrcmx9hm552u4uz5lmkfzyghj8e9z"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "record",
+            "id": "4805403435224621365734278391300826596894964250071903164389483739101358743570field",
+            "checksum": "6985406393521779856983473103509825266210885525229271662667417892959709126465field",
+            "value": "record1qyqsqzhfj5hlpuvsqx9ap75chne4uswwcvsj7lcf3e7mfhdlandhtsg8qyrxzmt0w4h8ggcqqgqsq70ua9dxv9rya3dftlaxrtpt3e3q8c8qc7a49g3mlv9h28yyefg2c4nz3dvc4ncjqek33a9hnzwsake87ngq5azz8ntzk9jejz7v8yqqeszsvv"
+          }
+        ],
+        "tpk": "2643972549441066750063040940703297181902894664126012393461815480247233578425group",
+        "tcm": "5163578271934955290639658945411832473101417516042690385852452480430833947548field",
+        "scm": "5433102308943788999887509309237548430116127169658829120573659030638547527561field"
+      }
+    ],
+    "global_state_root": "sr16j3mfejajsdu26tp7etmsemfh9ygh3ahzfh9mjz4djadxvacus8sjny5ky",
+    "proof": "proof1qyqsqqqqqqqqqqqpqqqqqqqqqqq8z0sv5557glpd4v8mu6d487kyqeqkkey4sd3cfsxumuwxhfxlu8h3mwmdt3qrfz2h59cemfe2zqyqqxwh3wn43ngup4ny0h5scvly6rhx0d40m5n9d5axlpkzswqj0x0xrh3vhn9gxef2xmghcpxs08vlwqxk9x4zmveddrqps33d63vmuh7z8cchd4maqlqcw48n6kaqkjs9ujenvqwlvw02ql9h89dh73yjmqq98vgqnluukcxam3wzaehz9yvl5y5kra42hpr5yte8stq4lye0v9l6azkyxj9v7snx5w3fmadwp25qs8hqdyt0drct6tfe2xdrwhm6kqpdz4gp5q9aymc6h5fgmtenryz3p0pxwl24mklh85fm06809mcsq355znwkca4hnkjcrzal4zrqnsk93vfrcssucrjqf0v900zccfm7eadv8fahjvahpx4v07qtrelasqqqp60p5fqgkhkp8fv8ag8val4lenjwaka8nc9294fzf9tu4n7h8s0ly7sj3sg7caug5sr2sk2rsqq8ruf70d5yedr8pxeyhde8uf3r8rnf6x6deaxf2zjk37kjyh7wjkemead29drqerlhl0hqfgrvtuqtfkq4jdpe4ma4vm6yrfww3nw0pw0mz9anut63s00zjd2uk6uwdulnt4vl6qcn3wdcdlq6yyad0tyqzrectmqjumyt7hyygrx5e65f3xa57dnqwuk44nvvlmnlp7agusgtdu5cp6tcuz666tuwt5cmqk9pm7x6wq2ahlhmrdnyltm3gkc2grsr0zg6mlt9j3fxwnv0pshjv967egmpuxrl5htk2v7tw9j37c22qyfgqys4ncrendh2mnvmx2xcgqh0rpp73avz3h296zcuhuphaxhszjrwq2zw56n84ksq06rn7lsj4wvmrr2gh7h6teh6rt4g8c5w92sqhetxx0wwuajdkm39m3r307v4kv94wyns586q6qdgygtsd77qcvzr6caud6hqeqq6cxt3vdjp3rvp9dpz70w6s20edzfj9nvqzqunwzej7aps45ncycyadlse4xk6llxl7rw5nmusq7ww78pyh90r24shq0yyku2qrj93datghkr85kmpjzhy7vusapxjdghlxeqtydp0x94q8xfcwq6kjcecv8mjcd3q20yeew8ne0n0g9wzh3sez5we60w6n5g3qvqqqqqqqqqqpjatk8f946auzwl3mfan9ql7jz2t942f6vpk6d3nyxra2qflgzdpml7v06pm5uvkpmqtzq49natvqqqpqcdzjf4qrj6wxepjzshn7pycyy7dgjnyyypkqpg39uspf2rswrvunxcnyqyrvzwe5y5q6pverpgpq892cg7pwjac6k2phy7xdtrzuu4w06hwe7kw6n9850dcwp3s9w4qf7hajyc8stz2czefehh7mqs20ue0et9rwkm5uujmmjzqnz932wa2gr4rl3kf6fgg8zp64xfhcdyhqqqq3xyhpq"
+  },
+  "fee": {
+    "transition": {
+      "id": "au1re34979kq5vzalf73xxfyxf6hjnf508ym0cvsnrrq90x76hcwsgqwgd0fc",
+      "program": "credits.aleo",
+      "function": "fee_public",
+      "inputs": [
+        {
+          "type": "public",
+          "id": "373113071015646951311340630761512784907201172205860138814187129839383365523field",
+          "value": "1503u64"
+        },
+        {
+          "type": "public",
+          "id": "2488386432503714168511125323626841236101265094291694182111436773420774733317field",
+          "value": "0u64"
+        },
+        {
+          "type": "public",
+          "id": "4330037713093040817813240495628888394641682213005899957357999864787863075581field",
+          "value": "7400126007646628085585451189534999956591904190956378958021356348370880360345field"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "future",
+          "id": "3957253312160777761558730415097181497645329251281426311785229381545481082036field",
+          "value": "{\n  program_id: credits.aleo,\n  function_name: fee_public,\n  arguments: [\n    aleo1a9t895kh79es2tx7rcnf8dh5yzz6zv26d8ydszacrn2jtnt73v8s6q6s7r,\n    1503u64\n  ]\n}"
+        }
+      ],
+      "tpk": "1089026038160621691970510039315361119572199348548702367860866517576507307296group",
+      "tcm": "3243936898289951276264893253934018409469327264681222438027680406965914422407field",
+      "scm": "2948975033885986054383178094875550875864681830508175393078194892969631126414field"
+    },
+    "global_state_root": "sr1yk5y4upu7edjregcv9q0rcx8yjv3qzz35shwznevzwaf46sjjv8sa9rzyl",
+    "proof": "proof1qyqsqqqqqqqqqqqpqqqqqqqqqqq2slsqf98g7vz5az9zwupvc5vnznu8szdhewez9zxjftsmecl9wwdp6x5t5lx5th2a6emwqw44h4yqq94g545jlyxxe4pyaavsjgdm85j6azl9xtpvqg5r30jj46tdnmvljyfuu2uedrq4ja68864x764rrq2gcn6e3udg4mutqw6nwsdfv7pn4fx5n8ht6lefdr0uttth567g4pawhht64k83zx62xwjh5ltjeuqp0y8kmdne22rq9y64cwv0zkwuzcxu053hq6xvwjrdfm8958dnhmytpvta740y5q65f8q44hp2s4ypw8snhrf5pajaa9k6flddzlyt68l8k2qzq9deppx345v29x86hpl2yk8zsc404rmsxlq4rjrf5a4czcnfcdnd2txwc6r65xn7zlcu6su6sj5fq7yvrtxhu8fh7wtmttjspqslwejy8pu72ncn06y3x3urq9u3pz0hmdrextqcwc03mq27xc5dw6wflreamrde35lkrkdxw985826tppxkgy9ksjzzxmejpuxmuqrdmq0snp4gplaeugh8zfmc25canzcgqy2rg47927v3c2cdrjms4kh843rmal97rzfxxaj2wx527uqx2geu08nya5ghrqknfa7nhuq92kwtpmqht0y9zkf758j8kpncv83f7tvhewnx2e084venpg9jvkgpkn4wvdllnm94qps30eg36kqv409hanp99lu0edlsf6xejmegpqr406ehu2njvwyru288tjpwqvx5nykerdrd25y4axjnemgcc7lsxqxvq86santtr5lswlclpf940y8uk7ygj3y4x7wqdkk707cx803gpq0u3r0e7gldevr4mumwf6zt7ezwqlfeag05a7ur3m5jtt9ncwpsuwr6fc34j92vpj05969kfze8yzs9qm2chqzp3smrf3eu7ux9n9g2d4aa7fp5zu6znrg7x2s26cyd0gqsx9uq6fq0peawt0v0fd2dqcp323yu3zn2uknlk79aa4ztxkkn67j4vaqw6f98y7hw3ngennyk7yqzlmpfachxfdlqqftp9sdhkuwwgy02ps80l7wg83870h9prvcvqf4y2z2w6hrg3qz02k853cdmfvf3awn86c9rdz43snv7cqh7kems0y4fp0h9tzus5y9ta2l3a6tpmdrh2qud6ha7ssqlndnwkm2luuq2qvqqqqqqqqqqqdnpted6hc6qqjaksxde8mt9jaj09m247upe5s3n6a0j5r8zz0dp8rhghmkfe7flala567vdzugnqyq26tn9l2jrkakzy0cd0vy9nch8sz3zqz4m002ya5fg3g7d5kvd5arzzstu0wcqxndend9t0zz7hzspq8cql2cqqejmqc06sc0v0j3vjwv9spw0rktzcg44empm4z7qvsqsf8p39m8hxk20yks3tmkjtvj4h4lxatsc2hncq66nd7h9azwfxl7s7ehyzhmwttmn45qpscz44jvlqyqqlgkm6j"
+  }
+}
+Found 1 transition(s) in the transaction.
+
+--- Transition #0 ---
+  ID: au1uxsyhz3439c4y52ns9lqnq0u4cj68xrta8h2g9j5cdu7llukagqsf0uh99
+  Program: private_donation.aleo
+  Function: N/A
+  Finalize: N/A
+  Found 1 output(s) in this transition.
+  Output #0:
+    ID: 4805403435224621365734278391300826596894964250071903164389483739101358743570field
+    Type: record
+    Value: record1qyqsqzhfj5hlpuvsqx9ap75chne4uswwcvsj7lcf3e7mfhdlandht...
+    Attempting to decrypt record ciphertext: record1qyqsqzhfj5hlpuvsqx9ap75...
+    Failed to decrypt record output #0: Not owned by this view key or invalid record.
+    Decryption error details: memory access out of bounds RuntimeError: memory access out of bounds
+    at wasm://wasm/01dc8156:wasm-function[1415]:0x5e96ef
+    at wasm://wasm/01dc8156:wasm-function[3925]:0x71ac47
+    at passStringToWasm0 (file:///C:/code/aleo/node_modules/.pnpm/@provablehq+wasm@0.8.8/node_modules/@provablehq/wasm/dist/testnet/index.js:128:15)
+    at ViewKey.decrypt (file:///C:/code/aleo/node_modules/.pnpm/@provablehq+wasm@0.8.8/node_modules/@provablehq/wasm/dist/testnet/index.js:7854:26)
+    at findRecordNonce (file:///C:/code/aleo/scripts/find_record_nonce.mjs:79:49)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+No records in this transaction could be decrypted with the provided view key. This might also indicate that the target record is in a different transition than expected, or the SDK is encountering an issue.

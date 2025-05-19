@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PrivateKey, Address } from "@provablehq/sdk"; // Fixed: AleoAddress to Address
+import { AleoWorkerMessage, AleoAccount } from './worker_types'; // Assuming types are in worker_types.ts
 
 // Helper to hash a string to a field-like string (simplified for demo)
 // In a real app, use a proper BHP256 hash and ensure it's a valid field representation.
@@ -32,9 +33,11 @@ export default function Home() {
   const [executingFunction, setExecutingFunction] = useState<string | null>(null); 
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [transactionId, setTransactionId] = useState<string | null>(null);
+  const [worker, setWorker] = useState<Worker | null>(null);
 
   // --- Mint Token State ---
   const [mintAmount, setMintAmount] = useState<string>("100");
+  const [mintAddress, setMintAddress] = useState('');
 
   // --- Donate State ---
   const [donateTokenRecord, setDonateTokenRecord] = useState<string>(""); // User will paste record string
@@ -45,9 +48,11 @@ export default function Home() {
   // --- Tax Proof State ---
   const [taxReceiptRecord, setTaxReceiptRecord] = useState<string>(""); // User will paste record string
   const [taxYear, setTaxYear] = useState<string>(new Date().getFullYear().toString());
+  const [taxProofResult, setTaxProofResult] = useState('');
 
-
-  const workerRef = useRef<Worker | null>(null);
+  // Program ID (ensure this matches your deployment)
+  const PROGRAM_ID = 'private_donation.aleo';
+  const FEE = '1'; // Default fee in credits (e.g., 1 credit)
 
   useEffect(() => {
     // Load account from localStorage on initial mount
@@ -58,6 +63,7 @@ export default function Home() {
         if (savedAccount && savedAccount.privateKey && savedAccount.address) {
           setAccount(savedAccount);
           setFeedbackMessage(`Loaded saved account: ${savedAccount.address}`);
+          setMintAddress(savedAccount.address);
         }
       } catch (e) {
         console.error("Failed to parse saved account:", e);
@@ -66,45 +72,57 @@ export default function Home() {
     }
     setIsAccountLoaded(true); // Indicate that we've attempted to load the account
 
-    workerRef.current = new Worker(new URL("worker.ts", import.meta.url));
+    const aleoWorker = new Worker(new URL('./worker.ts', import.meta.url));
+    setWorker(aleoWorker);
     
-    workerRef.current.onmessage = (event: MessageEvent) => {
-      const { type, result } = event.data;
-      console.log("Page received message from worker:", type, result);
-
+    aleoWorker.onmessage = (event: MessageEvent<AleoWorkerMessage>) => {
       setExecutingFunction(null); // Stop loading indicator for any completed/failed function
 
-      if (type === "worker_loaded") {
-        setFeedbackMessage((prev) => prev ? `${prev} Aleo worker loaded.` : "Aleo worker loaded successfully.");
+      const { type, result, error, transactionId: txId, functionName } = event.data;
+      console.log("Page received message from worker:", type, result);
+
+      if (error) {
+        setFeedbackMessage(`Error: ${error}`);
+        return;
       }
-      else if (type === "account_generated") {
-        setAccount(result);
-        localStorage.setItem(LOCAL_STORAGE_ACCOUNT_KEY, JSON.stringify(result));
-        setFeedbackMessage(`New account generated & saved! Address: ${result.address}. Private key: ${result.privateKey} (SAVE THIS securely if not already done!)`);
-      } 
-      else if (type === "transaction_broadcasted") {
-        setTransactionId(result.transactionId);
-        setFeedbackMessage(`Transaction for ${result.functionName} broadcasted! ID: ${result.transactionId}. Monitor explorer for finalization.`);
-        // Clear inputs for the successful function, or update records if applicable
-        if (result.functionName === 'mint_tokens') setMintAmount("100");
-        if (result.functionName === 'donate') {
+
+      switch (type) {
+        case 'account_generated':
+          setAccount(result as AleoAccount);
+          localStorage.setItem(LOCAL_STORAGE_ACCOUNT_KEY, JSON.stringify(result));
+          setFeedbackMessage(`New account generated & saved! Address: ${result.address}. Private key: ${result.privateKey} (SAVE THIS securely if not already done!)`);
+          setMintAddress(result.address);
+          break;
+        case 'transaction_broadcasted':
+          setTransactionId(txId || 'N/A');
+          setFeedbackMessage(`Transaction for ${functionName} broadcasted! ID: ${txId}. Monitor explorer for finalization.`);
+          // Clear inputs for the successful function, or update records if applicable
+          if (functionName === 'mint_tokens') setMintAmount("100");
+          if (functionName === 'donate') {
             setDonateTokenRecord("");
             setDonateAmount("10");
             setDonateMessage("Hello Aleo!");
             setDonateTimestamp("");
-        }
-        if (result.functionName === 'generate_tax_proof') {
+          }
+          if (functionName === 'generate_tax_proof') {
             setTaxReceiptRecord("");
-        }
-      } 
-      // Add handlers for transaction_finalized, transaction_failed if implementing polling in worker
-      else if (type === "error") {
-        setFeedbackMessage(`Error: ${result}`);
+          }
+          break;
+        case 'error':
+          setFeedbackMessage(`Error: ${result}`);
+          break;
+        case 'worker_loaded':
+          setFeedbackMessage((prev) => prev ? `${prev} Aleo worker loaded.` : "Aleo worker loaded successfully.");
+          // Try to load saved account on worker load
+          loadAccountFromStorage();
+          break;
+        default:
+          setFeedbackMessage(`Received unhandled message type: ${type}`);
       }
     };
 
     return () => {
-      workerRef.current?.terminate();
+      aleoWorker.terminate();
     };
   }, []);
 
@@ -116,13 +134,26 @@ export default function Home() {
     }
     setFeedbackMessage("Generating new Aleo account...");
     setExecutingFunction("generate_account");
-    workerRef.current?.postMessage({ type: "generate_account" });
+    worker?.postMessage({ type: "generate_account" });
   };
 
   const clearSavedAccount = () => {
     localStorage.removeItem(LOCAL_STORAGE_ACCOUNT_KEY);
     setAccount(null);
+    setMintAddress('');
     setFeedbackMessage("Saved account cleared. Generate a new one or refresh.");
+  };
+
+  const loadAccountFromStorage = () => {
+    const savedAccountJson = localStorage.getItem(LOCAL_STORAGE_ACCOUNT_KEY);
+    if (savedAccountJson) {
+      const savedAccount = JSON.parse(savedAccountJson);
+      setAccount(savedAccount);
+      setMintAddress(savedAccount.address);
+      setFeedbackMessage('Account loaded from localStorage.');
+    } else {
+      setFeedbackMessage('No account found in localStorage. Please generate one.');
+    }
   };
 
   const executeGenericTransaction = (functionName: string, inputs: any[], fee?: number) => {
@@ -133,7 +164,8 @@ export default function Home() {
     setFeedbackMessage(`Executing ${functionName}...`);
     setExecutingFunction(functionName);
     setTransactionId(null);
-    workerRef.current?.postMessage({
+    setTaxProofResult(''); // Clear previous proof
+    worker?.postMessage({
       type: "execute_transaction",
       payload: {
         privateKeyString: account.privateKey,
@@ -323,35 +355,59 @@ export default function Home() {
           </div>
         )}
 
-        {/* Generate Tax Proof */}
+        {/* Generate Tax Proof Section */}
         {account && (
-          <div className={styles.card}>
-            <h2>3. Generate Tax Proof</h2>
-            <p>You need a donation receipt record string (from a successful donation).</p>
+          <div className="w-full max-w-lg p-6 bg-gray-800 rounded-xl shadow-xl space-y-4">
+            <h2 className="text-2xl font-semibold text-center text-yellow-400">3. Generate Tax Proof</h2>
             <div>
-              <label>Donation Receipt Record String: </label>
-              <textarea 
-                value={taxReceiptRecord} 
-                onChange={(e) => setTaxReceiptRecord(e.target.value)} 
-                placeholder="{ owner: aleo1..., donation_id: ..., charity_id: ..., amount: ..., timestamp: ..., message_hash: ... }"
-                rows={4}
-                disabled={!!executingFunction}
+              <label htmlFor="taxReceiptRecordInput" className="block text-sm font-medium mb-1">Donation Receipt Record (Full String):</label>
+              <textarea
+                id="taxReceiptRecordInput"
+                rows={6}
+                value={taxReceiptRecord}
+                onChange={(e) => setTaxReceiptRecord(e.target.value)}
+                placeholder="{ owner: aleo1..., donation_id: ..., charity_id: ..., amount: ..., timestamp: ..., message_hash: ..., _nonce: ...group.public }"
+                className="input-field w-full"
+                aria-describedby="receiptRecordHelp"
               />
+              <p id="receiptRecordHelp" className="text-xs text-gray-500 mt-1">
+                Paste the complete DonationReceipt record string (output of a successful donate transaction).
+              </p>
             </div>
             <div>
-              <label>Tax Year (e.g., 2023): </label>
-              <input 
-                type="number" 
-                value={taxYear} 
-                onChange={(e) => setTaxYear(e.target.value)} 
-                placeholder="YYYY"
-                disabled={!!executingFunction}
+              <label htmlFor="taxYearInput" className="block text-sm font-medium mb-1">Tax Year (u64):</label>
+              <input
+                type="number"
+                id="taxYearInput"
+                value={taxYear}
+                onChange={(e) => setTaxYear(e.target.value)}
+                placeholder="e.g., 2023"
+                className="input-field"
               />
             </div>
-            <button onClick={handleGenerateTaxProof} disabled={!!executingFunction || !taxReceiptRecord || !taxYear}>
+            <button 
+              onClick={() => {
+                if (!taxReceiptRecord) {
+                  setFeedbackMessage("Error: Donation Receipt Record string is required.");
+                  return;
+                }
+                if (!taxYear) {
+                  setFeedbackMessage("Error: Tax Year is required.");
+                  return;
+                }
+                executeGenericTransaction('generate_tax_proof', [taxReceiptRecord, `${taxYear}u64`]);
+              }} 
+              disabled={!!executingFunction || !account || !taxReceiptRecord || !taxYear}
+              className="btn btn-primary w-full"
+            >
               {executingFunction === 'generate_tax_proof' ? "Generating Proof..." : "Generate Tax Proof"}
             </button>
-            {/* The tax proof itself (a field) will be in the transaction output on the explorer */}
+            {taxProofResult && (
+              <div className="mt-4 p-3 bg-gray-700 rounded">
+                <p className="text-sm font-semibold text-green-300">Generated Tax Proof Field:</p>
+                <p className="text-xs break-all text-gray-300">{taxProofResult}</p>
+              </div>
+            )}
           </div>
         )}
       </div>
