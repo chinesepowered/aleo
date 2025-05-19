@@ -13,15 +13,14 @@ await initThreadPool();
 // Define the deployed program ID
 const PROGRAM_ID = "private_donation.aleo"; // Make sure this matches your deployed program name
 
-// Aleo Testnet3 API endpoint - Corrected: Removed /testnet from the end
-const ALEO_TESTNET_API_URL = "https://api.explorer.provable.com/v1"; 
-
+// Point to the local Next.js API proxy route
+const ALEO_PROXY_URL = "/api/aleo"; 
 
 // Helper function to get transaction status
 async function getTransactionStatus(transactionId: string): Promise<string> {
     let status = "";
     while (status !== "Finalized" && status !== "Rejected" && status !== "Failed") {
-        const response = await fetch(`${ALEO_TESTNET_API_URL}/transaction/${transactionId}/status`);
+        const response = await fetch(`${ALEO_PROXY_URL}/transaction/${transactionId}/status`);
         const data = await response.json();
         status = data.status;
         if (status !== "Finalized" && status !== "Rejected" && status !== "Failed") {
@@ -50,10 +49,11 @@ onmessage = async function (e) {
       const userPrivateKey = PrivateKey.from_string(privateKeyString);
       const userAccount = new Account({ privateKey: userPrivateKey.to_string() });
 
-      const networkClient = new AleoNetworkClient(ALEO_TESTNET_API_URL);
+      // The AleoNetworkClient and ProgramManager will now use the proxy URL
+      const networkClient = new AleoNetworkClient(ALEO_PROXY_URL);
       const recordProvider = new NetworkRecordProvider(userAccount, networkClient);
 
-      const programManager = new ProgramManager(ALEO_TESTNET_API_URL, undefined, recordProvider);
+      const programManager = new ProgramManager(ALEO_PROXY_URL, undefined, recordProvider);
       programManager.setAccount(userAccount);
       
       console.log(`Worker: Executing ${PROGRAM_ID}/${functionName} with inputs:`, inputs);
