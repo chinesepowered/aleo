@@ -1,5 +1,5 @@
 // Program: private_donation.leo
-// Author: Gemini Assistant & User
+// Author: Chineseman
 // Description: A simplified private donation platform focusing on anonymous donations
 // and verifiable tax receipts for a dummy charity.
 
