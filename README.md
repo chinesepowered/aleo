@@ -1,12 +1,12 @@
-# 🔐 AnonyDonate 🔐
+# 🔐 Private Donation Platform 🔐
 
 > Privacy-preserving charitable donations on Aleo blockchain
 
-![AnonyDonate Banner](https://via.placeholder.com/1200x300)
+![Private Donation Platform Banner](https://via.placeholder.com/1200x300)
 
 ## 🌟 Overview
 
-AnonyDonate is a decentralized application built on the Aleo blockchain that enables completely private charitable donations while providing cryptographically verifiable proof for tax deduction purposes. By leveraging zero-knowledge proofs, donors can support causes they care about without revealing their identity or donation amounts to anyone except tax authorities when necessary.
+Private Donation Platform is a decentralized application built on the Aleo blockchain that enables completely private charitable donations while providing cryptographically verifiable proof for tax deduction purposes. By leveraging zero-knowledge proofs, donors can support causes they care about without revealing their identity or donation amounts to anyone except tax authorities when necessary.
 
 ## ✨ Key Features
 
@@ -47,43 +47,6 @@ The contract ensures:
 - Tax authorities can verify legitimacy without seeing specific amounts
 - Charities receive funds without knowing donor identities
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- An Aleo wallet with some tokens
-- Node.js and npm installed
-- Git for cloning the repository
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/anonydonate.git
-
-# Navigate to the project directory
-cd anonydonate
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm start
-```
-
-### Smart Contract Deployment
-
-```bash
-# Navigate to the contracts directory
-cd contracts
-
-# Build the Leo program
-leo build
-
-# Deploy to Aleo testnet
-leo deploy private_donation
-```
-
 ## 📸 Screenshots
 
 <div align="center">
@@ -105,25 +68,9 @@ leo deploy private_donation
 - **Donation Pooling**: Privacy-enhancing donation aggregation
 - **Cross-Chain Integration**: Support for other privacy-focused blockchains
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgements
 
 - Aleo team for building a privacy-preserving blockchain platform
-- Hackathon organizers and mentors
-- Everyone who contributed to the project
 
 ---
 
